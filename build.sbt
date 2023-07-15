@@ -63,3 +63,6 @@ lazy val `read-file` = project
       "com.lihaoyi" %% "ujson" % "3.0.0"
     )
   )
+
+lazy val `my-first-module` = project
+  .settings(sharedSettings)
