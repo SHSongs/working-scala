@@ -231,3 +231,21 @@ lazy val `deepzio4-pair1` = project
       "io.github.gaelrenoux" %% "tranzactio-doobie" % "5.0.1"
     )
   )
+
+lazy val `dependency-injection` = project
+  .settings(sharedSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+
+    )
+  )
+
+
+//lazy val `mock-test-jh` = project
+//  .settings(sharedSettings)
+//  .settings(
+//    libraryDependencies ++= Seq(
+//      "dev.zio" %% "zio-mock" % "1.0.0-RC10"
+//    )
+//  )
+
