@@ -14,7 +14,7 @@
 ```
 
 ## 메서드 목록
-`ZLayer.succeed()`
+`ZLayer.succeed()`<br/>
 값이나 서비스를 포함하는 레이어를 생성한다.
 - [ZLayer 알아보기](https://zio.dev/reference/contextual/zlayer/)
 ```scala
@@ -25,7 +25,7 @@ object 판교식당저장소 {
 판교식당저장소 인스턴스를 포함하는 레이어 생성
 
 
-`provideLayer()`
+`provideLayer()`<br/>
 ZIO ZLayer를 통해 의존성을 전달할 수 있도록 지원하는 메서드
 ```scala
 def useCaseUsingZLayer(): ZIO[식당저장소, IOException, Unit] = for {
