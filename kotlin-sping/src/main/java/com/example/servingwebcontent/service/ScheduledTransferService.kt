@@ -1,5 +1,6 @@
 package com.example.servingwebcontent.service
 
+import com.example.servingwebcontent.component.TransferHandler
 import com.example.servingwebcontent.model.ScheduledTransferRequest
 import com.example.servingwebcontent.model.TransferRequest
 import org.slf4j.LoggerFactory
@@ -9,7 +10,9 @@ import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @Service
-class ScheduledTransferService(private val transferService: TransferService) {
+class ScheduledTransferService(
+    private val transferHandler: TransferHandler
+) {
     private val logger = LoggerFactory.getLogger(ScheduledTransferService::class.java)
 
     private val scheduledTransfers = ConcurrentLinkedQueue<ScheduledTransferRequest>()
@@ -43,8 +46,8 @@ class ScheduledTransferService(private val transferService: TransferService) {
 
         for (transfer in dueTransfers) {
             try {
-                transferService.transferFunds(
-                    TransferRequest(transfer.fromAccountId, transfer.toAccountId, transfer.amount)
+                transferHandler.transferFunds(
+                    transfer.fromAccountId, transfer.toAccountId, transfer.amount
                 )
                 logger.info(
                     "Successfully processed transfer from {} to {} of amount {}",
