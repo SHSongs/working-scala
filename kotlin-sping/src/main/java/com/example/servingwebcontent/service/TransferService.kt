@@ -1,6 +1,7 @@
 package com.example.servingwebcontent.service
 
 import com.example.servingwebcontent.model.TransferRequest
+import com.example.servingwebcontent.model.TransferResult
 import java.util.concurrent.atomic.AtomicInteger
 import org.springframework.stereotype.Service
 
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service
 class TransferService {
 
     // Simulating account balances with an atomic variable (since no database is used)
-    private val accountBalances = mutableMapOf<String, AtomicInteger>()
+    val accountBalances = mutableMapOf<String, AtomicInteger>()
 
     init {
         // Initialize some dummy accounts with balances
@@ -17,20 +18,27 @@ class TransferService {
     }
 
     @Synchronized
-    fun transferFunds(transferRequest: TransferRequest): Unit {
+    fun transferFunds(transferRequest: TransferRequest): TransferResult {
         val fromBalance = accountBalances[transferRequest.fromAccountId]
-        val toBalance = accountBalances[transferRequest.toAccountId] // optional?
-
-        if (fromBalance == null || toBalance == null) { // 이런면에서는 Scala가 더 추상화가 잘된듯
-            throw IllegalArgumentException("Invalid account ID")
+        val toBalance = accountBalances[transferRequest.toAccountId]
+        if (fromBalance == null) {
+            return TransferResult.InvalidInput.InvalidAccount(transferRequest.fromAccountId)
+        }
+        if (toBalance == null) {
+            return TransferResult.InvalidInput.InvalidAccount(transferRequest.toAccountId)
         }
 
         if (transferRequest.amount <= 0) {
-            throw IllegalArgumentException("Transfer amount must be greater than zero")
+            return TransferResult.InvalidInput.InvalidAmount
         }
 
+
         if (fromBalance.get() < transferRequest.amount) {
-            throw IllegalArgumentException("Insufficient funds")
+            return TransferResult.InsufficientFunds(
+                fromAccountId = transferRequest.fromAccountId,
+                availableBalance = fromBalance.get(),
+                requestedAmount = transferRequest.amount
+            )
         }
 
         fromBalance.addAndGet(-transferRequest.amount)
@@ -42,9 +50,15 @@ class TransferService {
             throw e
         }
 
+        return TransferResult.Success(
+            fromAccountId = transferRequest.fromAccountId,
+            toAccountId = transferRequest.toAccountId,
+            amount = transferRequest.amount
+        )
     }
 
     fun getBalance(accountId: String): Int? { // kotlin의 규칙은 모르겠지만... return type이 optional도 get으로 하나?
         return accountBalances[accountId]?.get()
     }
+
 }
